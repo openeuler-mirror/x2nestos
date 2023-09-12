@@ -1,23 +1,24 @@
 # x2nestos
 
+将通用形态操作系统转换为 NestOS 的快捷部署工具。
+
 #### 介绍
-A quick deployment tool for converting a general OS (Like openEuler) to NestOS, suitable for scenarios where it is not convenient to reboot or convert in large quantities. Attention: It's not a migration tools and do NOT preserve disk data.
 
-#### 软件架构
-软件架构说明
+基于已部署的 openeuler 等通用 OS 形态，转换为基于不可变操作系统的 NestOS。适用于不方便重新引导安装或大批量转换的场景。
 
+**注意：**
+
+**1.非迁移工具，不保留磁盘数据。**
+
+**2.此转换不可逆。**
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+// todo
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+// todo
 
 #### 参与贡献
 
@@ -26,12 +27,20 @@ A quick deployment tool for converting a general OS (Like openEuler) to NestOS, 
 3.  提交代码
 4.  新建 Pull Request
 
+#### Roadmap
 
-#### 特技
+- [✔] 支持 openeuler 转换为 NestOS 基本能力
+  - [✔] 支持手动指定完整参数
+  - [ ] 支持手动指定 ISO 路径自动挂载部署
+  - [ ] 支持指定版本自动下载待部署镜像
+- [ ] 支持保留数据分区
+- [ ] 支持保留原操作系统，将 NestOS 部署于空闲分区
+  - [ ] 支持指定硬盘及所需空间后，自动压缩当前磁盘空间并部署
+- [ ] 支持将当前部署中的部分配置生成为部署 NestOS 时所需 ign 文件
+- [ ] 支持选择待转换 NestOS 版本及发布流
+- [ ] 扩展支持其他操作系统
+- [ ] ...
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+#### License
+
+SPDX-License-Identifier: MulanPSL-2.0
