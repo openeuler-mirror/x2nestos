@@ -13,6 +13,9 @@
 #
 set -eu -o pipefail
 
+# 版本配置文件
+source version.conf
+
 # 关键变量初始化
 
 # 安装目标设备
@@ -39,6 +42,19 @@ print_help() {
     echo "  -s, --install-source      The path where the NestOS installation ISO is located, may require you to download it locally in advance"
     echo "  --debug                   Output every commands during the execution process"
     echo "  -h, --help                Display this help message"
+    echo "  -v, --version             Display Version info"
+}
+
+print_version_info() {
+    echo "X2NestOS  v$VERSION"
+    echo ""
+    echo "Copyright (c) 2023 KylinSoft Co., Ltd."
+    echo "Released on: $RELEASE_DATE"
+    echo "Website: https://gitee.com/openeuler/x2nestos"
+    echo "License: MulanPSL-2.0"
+    echo ""
+    echo "This script is used to convert a general linux operating system to NestOS."
+    echo "For support and documentation, visit: https://gitee.com/openeuler/x2nestos"
 }
 
 open_debug() {
@@ -87,6 +103,10 @@ parse_args() {
             ;;
         -h | --help)
             print_help
+            exit 0
+            ;;
+        -v | --version)
+            print_version_info
             exit 0
             ;;
         *)
