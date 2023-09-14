@@ -17,7 +17,7 @@ set -eu -o pipefail
 VERSION="0.1.0"
 
 # 发布日期
-RELEASE_DATE="September 13, 2023"
+RELEASE_DATE="September 14, 2023"
 
 # 关键变量初始化
 
