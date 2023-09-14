@@ -13,8 +13,11 @@
 #
 set -eu -o pipefail
 
-# 版本配置文件
-source version.conf
+# 版本号
+VERSION="0.1.0"
+
+# 发布日期
+RELEASE_DATE="September 13, 2023"
 
 # 关键变量初始化
 
@@ -34,13 +37,17 @@ install_ignition=''
 # Example: install_source='nestos-22.03-LTS-SP2.20230704.0-live.x86_64.iso'
 install_source=''
 
+# 工作目录，默认为/tmp
+work_dir='/tmp'
+
 print_help() {
     echo "Usage:"
-    echo "  $0 [-d DEVICE] [-i IGNITION_URL]"
+    echo "  $0 [-d DEVICE] [-i IGNITION_URL] [-s INSTALL_SOURCE]"
     echo "  -d, --dev DEVICE          Specify the installation target device (e.g., /dev/vda)"
     echo "  -i, --ignition-url        IGNITION_URL Specify the URL for the Ignition config"
     echo "  -s, --install-source      The path where the NestOS installation ISO is located, may require you to download it locally in advance"
     echo "  --debug                   Output every commands during the execution process"
+    echo "  --work_dir                Specify the working directory path, default to /tmp"
     echo "  -h, --help                Display this help message"
     echo "  -v, --version             Display Version info"
 }
@@ -53,7 +60,7 @@ print_version_info() {
     echo "Website: https://gitee.com/openeuler/x2nestos"
     echo "License: MulanPSL-2.0"
     echo ""
-    echo "This script is used to convert a general linux operating system to NestOS."
+    echo "This script is used to convert a general linux operating system to NestOS For Container."
     echo "For support and documentation, visit: https://gitee.com/openeuler/x2nestos"
 }
 
@@ -82,6 +89,10 @@ parse_args() {
         --debug)
             is_debug=1
             shift 1
+            ;;
+        --work_dir)
+            work_dir="$2"
+            shift 2
             ;;
         -d | --dev)
             install_dev="$2"
@@ -136,7 +147,7 @@ parse_args() {
     fi
 
     if [[ -z "$install_source" ]]; then
-        echo "Error: Installation image path (-s) is required."
+        echo "Error: Installation image (Currently only supports ISO image) path (-s) is required."
         print_help
         exit 1
     fi
@@ -189,23 +200,29 @@ if [ ! -f "$install_source" ]; then
     exit 1
 fi
 
-if [ ! -d '/cdrom' ]; then
-    mkdir /cdrom
+if [ ! -d "$work_dir/cdrom" ]; then
+    mkdir -p "$work_dir/cdrom"
 fi
 
-if [ ! -d '/cdrom/images' ]; then
-    mount -o loop "$install_source" /cdrom
+if [ ! -d "$work_dir/cdrom/images" ]; then
+    mount -o loop "$install_source" "$work_dir/cdrom"
 fi
 
 # 安装依赖软件包
 install_package kexec-tools
 
 # 提取安装文件
-kernel='/cdrom/images/pxeboot/vmlinuz'
-initramfs='/cdrom/images/pxeboot/initrd.img'
-rootfs='/cdrom/images/pxeboot/rootfs.img'
-if [ ! -f './combined.img' ]; then
-    cat $initramfs $rootfs >combined.img
+kernel="$work_dir/cdrom/images/pxeboot/vmlinuz"
+initramfs="$work_dir/cdrom/images/pxeboot/initrd.img"
+rootfs="$work_dir/cdrom/images/pxeboot/rootfs.img"
+
+if [ ! -f "$work_dir/combined.img" ]; then
+    rm -rf "$work_dir/combined.img"
+fi
+
+if ! { cat "$initramfs" "$rootfs" >"$work_dir/combined.img"; } 2>&1; then
+    echo "Error: Failed to Convert"
+    exit 1
 fi
 
 # 执行转换为NestOS操作
@@ -227,5 +244,5 @@ while true; do
     esac
 done
 
-kexec -l $kernel --initrd=./combined.img --command-line="nestos.inst.install_dev=${install_dev} nestos.inst.ignition_url=${install_ignition} console=ttyS0"
+kexec -l "$kernel" --initrd="$work_dir/combined.img" --command-line="nestos.inst.install_dev=${install_dev} nestos.inst.ignition_url=${install_ignition} console=ttyS0"
 systemctl kexec
