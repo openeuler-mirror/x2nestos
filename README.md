@@ -18,7 +18,7 @@
 
 如您使用 NestOS For Virt 版本，已默认集成该工具，可直接执行 x2nestos 命令。
 
-如您使用 openeuler，可在开启 epol 情况下执行如下命令安装本工具。
+<del>如您使用 openeuler，可在开启 epol 情况下执行如下命令安装本工具。</del>(暂未合入，敬请期待)
 
 ```
 sudo dnf install x2nestos

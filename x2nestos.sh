@@ -14,10 +14,10 @@
 set -eu -o pipefail
 
 # 版本号
-VERSION="0.1.0"
+VERSION="0.1.1"
 
 # 发布日期
-RELEASE_DATE="September 14, 2023"
+RELEASE_DATE="September 25, 2023"
 
 # 关键变量初始化
 
@@ -196,8 +196,13 @@ check_root
 
 # 获取、挂载、校验安装镜像
 if [ ! -f "$install_source" ]; then
-    echo "Error: The specified install image $install_source does not exist."
-    exit 1
+    # 检查是否是光驱设备
+    if lsblk -n -o TYPE "$install_source" | grep -q 'rom'; then
+        echo "$install_source is a CD/DVD drive.Attempt to mount ..."
+    else
+        echo "Error: The specified install image $install_source does not exist or is not a valid ISO file or CD/DVD drive."
+        exit 1
+    fi
 fi
 
 if [ ! -d "$work_dir/cdrom" ]; then
@@ -216,7 +221,7 @@ kernel="$work_dir/cdrom/images/pxeboot/vmlinuz"
 initramfs="$work_dir/cdrom/images/pxeboot/initrd.img"
 rootfs="$work_dir/cdrom/images/pxeboot/rootfs.img"
 
-if [ ! -f "$work_dir/combined.img" ]; then
+if [ -f "$work_dir/combined.img" ]; then
     rm -rf "$work_dir/combined.img"
 fi
 
@@ -228,7 +233,8 @@ fi
 # 执行转换为NestOS操作
 
 while true; do
-    read -rp $'\033[;31;1m警告：\033[0m''即将开始执行转换为NestOS操作，此操作会丢失目标安装磁盘全部数据，并存在无法引导的风险，是否继续？ (y/n): ' choice
+    # read -rp $'\033[;31;1m警告：\033[0m''即将开始执行转换为NestOS操作，此操作会丢失目标安装磁盘全部数据，并存在无法引导的风险，是否继续？ (y/n): ' choice
+    read -rp $'\033[;31;1mWarning:\033[0m''Ready to convert to NestOS for Container.This operation will lose all data on the disk and pose a risk of not being able to boot. Do you want to continue? (y/n): ' choice
     case $choice in
     [Yy] | [Yy][Ee][Ss])
         echo "Continuing..."
